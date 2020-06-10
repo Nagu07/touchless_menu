@@ -16,8 +16,8 @@ function App() {
   return (
     <Router>
     <Switch>
-        <Route path="/login" component={Login}></Route>
-        <Route path="/admin" component={Dashboard}></Route>
+        <Route path={`${process.env.PUBLIC_URL}/login`} component={Login}></Route>
+        <Route path={`${process.env.PUBLIC_URL}/admin`} component={Dashboard}></Route>
     </Switch>
     </Router>
   );

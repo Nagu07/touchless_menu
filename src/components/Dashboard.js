@@ -3,6 +3,7 @@ import {
   BrowserRouter as Router,
   Redirect,
 } from "react-router-dom";
+import Loader from "./Loader";
 import {storage} from './firebase';
 
 //Sign In component
@@ -15,13 +16,15 @@ class DashboardComp extends React.Component
     super(props);
     this.state = {
     image:[],
-    url:null
+    url:null,
+    loading: false
     };
        
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handlePreview = this.handlePreview.bind(this);
     this.handleQR = this.handleQR.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
 } 
     handleChange(event) 
     {
@@ -35,24 +38,40 @@ class DashboardComp extends React.Component
 
       //Image upload to storage
     handleQR(event) {
+      this.setState({ 
+        loading: true
+       });
        getHTMLURL(userName);
        setTimeout(() => {
         var htmlFileURL = sessionStorage.getItem('htmlURL');
         this.setState({ 
-          url: "http://api.qrserver.com/v1/create-qr-code/?data="+htmlFileURL+"&size=100x100"
+          url: "http://api.qrserver.com/v1/create-qr-code/?data="+htmlFileURL+"&size=100x100",
+          loading:false
         });
-       },4000);
+       },10000);
     }
 
        
     //Image Delete in storage
     handleDelete(event) {
+      this.setState({ 
+        loading: true
+      });
       getFileName(userName);
+      setTimeout(() => {
+        alert('Uploaded successfully');
+        this.setState({ 
+          loading: false
+      });
+     },10000);
+
     }
     
     //Image upload to storage
     handleSubmit(event) {
-      console.log(this.state.image);
+      this.setState({ 
+        loading: true
+       });
       for(let i=0;i<this.state.image.length;i++)
       {
         const imgObj = this.state.image[i];
@@ -60,12 +79,24 @@ class DashboardComp extends React.Component
       }
       setTimeout(() => {
           alert('Uploaded successfully');
-       },5000);
+          this.setState({ 
+            loading: false
+        });
+       },10000);
     }
     
     //Return a HTML document to user browser
     handlePreview(event) {
-    getFileURL(userName);
+        this.setState({ 
+          loading: true
+        });
+        getFileURL(userName);
+        setTimeout(() => {
+          alert('Preview generated successfully');
+          this.setState({ 
+            loading: false
+        });
+      },10000);
   }
       
 
@@ -76,6 +107,10 @@ class DashboardComp extends React.Component
       {
         return <Redirect  to="/login" ></Redirect>;
       }
+    if (this.state.loading) 
+    {
+      return <Loader />;
+    }
     return (
         <div className="App">
           <div className="dashboard-section">
@@ -148,6 +183,7 @@ function getFileURL(userName)
 
 function generateHTML(fileListArray)
 {
+  console.log(fileListArray);
   htmlTemplate = "<!DOCTYPE html><html><head><style>img{height:100vh;width:100vw;}</style></head><body>";
   for(let i=0;i<fileListArray.length;i++)
   {
@@ -194,7 +230,7 @@ function deleteFileUploads(fileNameList)
         // Delete the file
         var test = imageRef.delete().then(function() {
             // File deleted successfully
-            alert('Deleted one file!');
+            console.log('Delete success');
         }).catch(function(error) {
             // Uh-oh, an error occurred!
             alert('Error occured while deleting please contact site admin');
