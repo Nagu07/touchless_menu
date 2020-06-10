@@ -1,16 +1,9 @@
-import React, { Component }  from 'react';
+import React  from 'react';
 import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    Link,
     Redirect,
-    useHistory,
-    useLocation
   } from "react-router-dom";
-  import firebaseconfig from './firebase';
-  import firebase from 'firebase';
-import Dashboard from './Dashboard';
+import firebaseconfig from './firebase';
+import firebase from 'firebase';
 
    // Initialize Firebase
 
@@ -86,8 +79,6 @@ class SignIn extends React.Component
     
 }
 
-
-
     handleChange(event) 
     {
         const target = event.target;
@@ -106,13 +97,13 @@ class SignIn extends React.Component
         firebaseconfig
         .auth()
         .signInWithEmailAndPassword(this.state.username, this.state.password)
-        .then(res => {
+        .then(() => {
           //if (res.user) Auth.setLoggedIn(true);
           this.setState({ 
             isLogged:true
           });
         })
-        .catch(e => {
+        .catch(() => {
             //setErrors(e.message);
             alert('Your password did not match please try again!');
         });
@@ -121,13 +112,14 @@ class SignIn extends React.Component
       }
 
        
-    //Sign in Logic in Firebase using mail and password
+    //Google Sign in Logic in Firebase using mail and password
+
     handleGoogleSubmit(event) {
+      
       event.preventDefault();
       var provider = new firebase.auth.GoogleAuthProvider();
       provider.addScope('profile');
       provider.addScope('email');
-
 
       firebaseconfig
       .auth()
@@ -143,9 +135,7 @@ class SignIn extends React.Component
           //setErrors(e.message);
           console.log(e);
           alert('Your password did not match please try again!');
-      });
-
-      
+      });  
     }
 
   render()
@@ -192,8 +182,6 @@ class SignUp extends React.Component
     this.handleSubmit = this.handleSubmit.bind(this);
 }
 
-
-
     handleChange(event) 
     {
         const target = event.target;
@@ -212,7 +200,7 @@ class SignUp extends React.Component
         firebaseconfig
         .auth()
         .createUserWithEmailAndPassword(this.state.username, this.state.password)
-        .then(res => {
+        .then(() => {
           //if (res.user) Auth.setLoggedIn(true);
           alert('You are registered successfully');
         })
@@ -222,8 +210,6 @@ class SignUp extends React.Component
             alert('Error occured with registration');
         });
     }
-
-
 
   render()
   {

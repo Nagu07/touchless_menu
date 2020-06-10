@@ -1,12 +1,7 @@
 import React from 'react';
 import {
   BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
   Redirect,
-  useHistory,
-  useLocation
 } from "react-router-dom";
 import {storage} from './firebase';
 
@@ -26,9 +21,8 @@ class DashboardComp extends React.Component
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handlePreview = this.handlePreview.bind(this);
-}
-
- 
+    this.handleQR = this.handleQR.bind(this);
+} 
     handleChange(event) 
     {
         const target = event.target;
@@ -40,40 +34,21 @@ class DashboardComp extends React.Component
     }
 
       //Image upload to storage
-      handleQR(event) {
-        htmlTemplate += "</body></html>";
-         console.log(htmlTemplate);
-        const element = document.createElement("a");
-        const file = new Blob([htmlTemplate],    
-                    {type: 'text/html'});
-        console.log(file);
-        const UploadHTMLTask = storage.ref(`HTML_Pages/${userName}.html`).put(file);            
-        element.href = URL.createObjectURL(file);
-        element.download = ""+userName+".html";
-        document.body.appendChild(element);
-        element.click();
-
-      }
+    handleQR(event) {
+       getHTMLURL(userName);
+       setTimeout(() => {
+        var htmlFileURL = sessionStorage.getItem('htmlURL');
+        this.setState({ 
+          url: "http://api.qrserver.com/v1/create-qr-code/?data="+htmlFileURL+"&size=100x100"
+        });
+       },4000);
+    }
 
        
     //Image Delete in storage
-    // handleDelete(event) {
-    //     // Create a reference to the file to delete
-    //     var storageRef = storage.ref();
-    //     var desertRef = storageRef.child(`${userName}`);
-
-    //     // Delete the file
-    //     desertRef.delete().then(function() {
-    //       // File deleted successfully
-    //       alert('All Uploads deleted successfully');
-    //     }).catch(function(error) {
-    //       // Uh-oh, an error occurred!
-    //       alert('Error occured while delete, Please contact website administrator');
-    //     });
-    //   // const image = this.state.image;
-    //   // event.preventDefault();
-    //   // const UploadTask = storage.ref(`images/${image.name}`).put(image);
-    // }
+    handleDelete(event) {
+      getFileName(userName);
+    }
     
     //Image upload to storage
     handleSubmit(event) {
@@ -82,51 +57,15 @@ class DashboardComp extends React.Component
       {
         const imgObj = this.state.image[i];
         const UploadTask = storage.ref(`${userName}/${imgObj.name}`).put(imgObj);
-        console.log(UploadTask);
       }
+      setTimeout(() => {
+          alert('Uploaded successfully');
+       },5000);
     }
     
     //Return a HTML document to user browser
     handlePreview(event) {
-      //  htmlTemplate = "<!DOCTYPE html><html><head><style>img{height:100vh;width:100vw;}</style></head><body>";
-
-      //const storageRef = storage.ref();
-      //const fileList = storageRef.child(`${userName}`);
-      
-    //   var forEachtest = new Promise((resolve, reject) => fileList.listAll().then(function(res) {
-    //      res.items.forEach(function (itemRef) {
-    //       //console.log(itemRef.name);
-    //       itemRef.getDownloadURL().then(function (url) {
-    //         console.log(url);
-    //         htmlTemplate += "<img src=" + url + " />";
-    //       });
-    //     });
-    //   }));
-
-    //   forEachtest.then(() => {
-    //     console.log('All done!');
-    // });
-
-    // var fileListArray = getFileURL(userName, fileListArray => 
-    // {
-    //   console.log('Now we have data');
-    //   console.log(fileListArray);
-    // });       
-    //var test = generateHTML(fileListArray);
-    // for(let i=0;i<fileListArray.length;i++)
-    // {
-    //   htmlTemplate += "<img src=" + fileListArray[i] + " />";
-    // }
-    //   htmlTemplate += "</body></html>";
-
-    //console.log(generateHTML(fileListArray));
-      // const element = document.createElement("a");
-      // const file = new Blob([generateHTML(fileListArray)],    
-      //             {type: 'text/plain;charset=utf-8'});
-      // element.href = URL.createObjectURL(file);
-      // element.download = "myTest.html";
-      // document.body.appendChild(element);
-      // element.click();
+    getFileURL(userName);
   }
       
 
@@ -147,10 +86,16 @@ class DashboardComp extends React.Component
             <button class="btn">Select files</button>
             <input type="file" name="image" value={this.state.value} onChange={this.handleChange} multiple/>
           </div>
-           <div className="button-section marign-bottom-medium">
+           <div className="button-section">
            <button onClick={this.handleSubmit} className="form-controls-button">Upload</button>
-           <button onClick={this.handlePreview} className="form-controls-button">Generate HTML</button>
-           <button onClick={this.handleQR} className="form-controls-button">Download HTML</button>
+           <button onClick={this.handlePreview} className="form-controls-button">Download HTML</button>
+           <button onClick={this.handleDelete} className="form-controls-button">Delete Uploads</button>
+           </div>
+           <div>
+             <button onClick={this.handleQR} className="form-controls-button">Get QR Code</button>
+           </div>
+           <div className="marign-bottom-small">
+           <img src={this.state.url}></img>  
            </div>
            <div className="inst-section">
              <h2 className="inst-section-header marign-bottom-small">Upload Instructions</h2>
@@ -161,7 +106,6 @@ class DashboardComp extends React.Component
                <li className="inst-section-item"><ion-icon name="arrow-forward-outline"></ion-icon> You can view your QR code using OR code preview button</li>
              </ul>
            </div>
-           {/* <img src={this.state.url}></img> */}
            </div>
            <footer>&copy; Copyright {(new Date().getFullYear())} Touchless menu</footer>
         </div> 
@@ -187,7 +131,7 @@ function getFileURL(userName)
    var storageRef = storage.ref();
    var fileList = storageRef.child(`${userName}`);
    
-    fileList.listAll().then(function(res) {
+   fileList.listAll().then(function(res) {
      res.items.forEach(function (itemRef) {
       itemRef.getDownloadURL().then(function (url) {  
       fileListArray.push(url);
@@ -195,12 +139,14 @@ function getFileURL(userName)
     })
   })
   //console.log(fileListArray);
-  return fileListArray;
+  setTimeout(() => {
+   generateHTML(fileListArray);
+  },5000);
 }
 
 //Generating HTML and store it
 
-function generateHTML(fileListArray,callback)
+function generateHTML(fileListArray)
 {
   htmlTemplate = "<!DOCTYPE html><html><head><style>img{height:100vh;width:100vw;}</style></head><body>";
   for(let i=0;i<fileListArray.length;i++)
@@ -208,7 +154,69 @@ function generateHTML(fileListArray,callback)
     htmlTemplate += "<img src=" + fileListArray[i] + " />";
   }
   htmlTemplate += "</body></html>";
-  callback(htmlTemplate);
+  
+  const element = document.createElement("a");
+  const file = new Blob([htmlTemplate],    
+                    {type: 'text/html'});
+  const UploadHTMLTask = storage.ref(`HTML_Pages/${userName}.html`).put(file);            
+  element.href = URL.createObjectURL(file);
+  element.download = ""+userName+".html";
+  document.body.appendChild(element);
+  element.click();
 }
 
+//Get List of File under a user
+function getFileName(userName)
+{
+  var fileNameList=[];
+   var storageRef = storage.ref();
+   var fileList = storageRef.child(`${userName}`);
+   
+   fileList.listAll().then(function(res) {
+     res.items.forEach(function (itemRef) {
+        fileNameList.push(itemRef.name);
+    })
+  })
+  //console.log(fileListArray);
+  setTimeout(() => {
+     deleteFileUploads(fileNameList);
+  },4000);
+}
+
+//Deleting List of file under user folder one by one
+function deleteFileUploads(fileNameList)
+{          
+    var storageRef = storage.ref();    
+    for(let i=0;i<fileNameList.length;i++)
+      {
+        // Create a reference to the file to delete
+        var imageRef = storageRef.child(`${userName}/${fileNameList[i]}`);
+        // Delete the file
+        var test = imageRef.delete().then(function() {
+            // File deleted successfully
+            alert('Deleted one file!');
+        }).catch(function(error) {
+            // Uh-oh, an error occurred!
+            alert('Error occured while deleting please contact site admin');
+        });
+      }    
+}
+
+//Get HTML file Link
+function getHTMLURL(userName)
+{
+  var htmlFileURL = null;
+  var storageRef = storage.ref();
+  var htmlFileURL = storageRef.child(`HTML_Pages/${userName}.html`);
+   
+  htmlFileURL.getDownloadURL().then(function(url) {
+    htmlFileURL = url;
+  }).catch(function(error) {
+    alert('Error occured while fetching HTML File URL, Please contact site admin');
+  });
+  //console.log(fileListArray);
+  setTimeout(() => {
+    sessionStorage.setItem('htmlURL',htmlFileURL);
+ },3000);
+}
 
