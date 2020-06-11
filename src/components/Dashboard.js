@@ -17,6 +17,7 @@ class DashboardComp extends React.Component
     this.state = {
     image:[],
     url:null,
+    uploadFileCount:0,
     loading: false
     };
        
@@ -32,11 +33,12 @@ class DashboardComp extends React.Component
         const value =  target.value;
         const name = target.name;
         this.setState({ 
+          uploadFileCount:event.target.files.length,
           [name]: event.target.files
       });
     }
 
-      //Image upload to storage
+    //Get HTML QR code URL from storage
     handleQR(event) {
       this.setState({ 
         loading: true
@@ -60,7 +62,7 @@ class DashboardComp extends React.Component
       });
       getFileName(userName);
       setTimeout(() => {
-        alert('Uploaded successfully');
+        alert('Deleted successfully');
         this.setState({ 
           loading: false
       });
@@ -80,7 +82,7 @@ class DashboardComp extends React.Component
       }
       setTimeout(() => {
           alert('Uploaded successfully');
-          this.setState({ 
+          this.setState({
             loading: false
         });
        },10000);
@@ -118,6 +120,7 @@ class DashboardComp extends React.Component
           <h3 className="header-text marign-bottom-medium">Dashboard {userName}</h3>
            <div className="upload-section">
            <p className="paragraph-text marign-bottom-small">Upload you menu pictures here</p>
+            <p className="marign-bottom-small">{this.state.uploadFileCount} Files selected</p>
            <div class="upload-btn-wrapper">
             <button class="btn">Select files</button>
             <input type="file" name="image" value={this.state.value} onChange={this.handleChange} multiple/>

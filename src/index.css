@@ -265,6 +265,11 @@ div.loader {
     padding: 3rem 2rem;
   }
 
+  .dashboard-section
+  {
+    padding:3rem;
+  }
+
   .header-text
   {
     
@@ -287,6 +292,11 @@ div.loader {
   
   body {
     padding: 2rem 2rem;
+  }
+
+  .dashboard-section
+  {
+    padding:3rem;
   }
 
   .header-text
