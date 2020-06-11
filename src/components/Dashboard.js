@@ -44,8 +44,9 @@ class DashboardComp extends React.Component
        getHTMLURL(userName);
        setTimeout(() => {
         var htmlFileURL = sessionStorage.getItem('htmlURL');
-        this.setState({ 
-          url: "http://api.qrserver.com/v1/create-qr-code/?data="+htmlFileURL+"&size=100x100",
+        this.setState(
+          {
+          url: "http://api.qrserver.com/v1/create-qr-code/?data="+encodeURI(htmlFileURL)+"&size=100x100",
           loading:false
         });
        },10000);

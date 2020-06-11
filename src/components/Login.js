@@ -97,8 +97,9 @@ class SignIn extends React.Component
         firebaseconfig
         .auth()
         .signInWithEmailAndPassword(this.state.username, this.state.password)
-        .then(() => {
-          //if (res.user) Auth.setLoggedIn(true);
+        .then(res => {
+          userName=res.user.email.substring(0,res.user.email.indexOf('@'));
+          userId = res.user.uid;
           this.setState({ 
             isLogged:true
           });

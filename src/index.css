@@ -38,9 +38,6 @@ body
     color: #777;
 }
 
-
-
-
 .main-section
 {
     height: auto;
@@ -109,6 +106,11 @@ input[type=text]:focus {
   border: 2px solid orange;
 }
 
+input[type=password]:focus {
+  outline: none;
+  border: 2px solid orange;
+}
+
 .form-controls-button
 {
   text-transform: uppercase;
@@ -171,7 +173,6 @@ button:focus {outline:0;}
   text-transform: uppercase;
 }
 
-
 .center {
   margin: auto;
   width: 50%;
@@ -183,6 +184,7 @@ button:focus {outline:0;}
   transform: translate(-50%, -50%);
   font-size: 20px;
 }
+
 div.loader {
   font-size: 100px;
 }
